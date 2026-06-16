@@ -9,13 +9,20 @@ import { generateJWT } from './auth.js';
 import { authenticateJWT } from './middleware/auth.js';
 import cors from 'cors';
 import { generateVerificationToken, sendVerificationEmail } from './email.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // note: Enable JSON body parsing and CORS for cross-origin requests from the React client.
 app.use(express.json());
 app.use(cors());
+
+/* important: In production, serve the built client static files.
+ * The client build output is in ../client/dist relative to this server directory. */
+app.use(express.static(path.join(__dirname, '..', 'client', 'dist')));
 
 app.get('/', (req, res) => {
     res.redirect('/register');
@@ -217,6 +224,13 @@ app.get('/verify', async (req, res) => {
         console.error('Email verification failed:', err);
         res.status(400).json({ error: 'Invalid or expired verification link.' });
     }
+});
+
+/* important: SPA fallback — any non-API GET request serves the React app.
+ * This enables client-side routing (React Router) in production.
+ * nota bene: Express 5 uses path-to-regexp v8 which requires named wildcards. */
+app.get('/{*path}', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'client', 'dist', 'index.html'));
 });
 
 // note: Start the server on the configured port.

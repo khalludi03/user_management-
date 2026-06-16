@@ -1,0 +1,9 @@
+{
+  "name": "user-management",
+  "private": true,
+  "scripts": {
+    "postinstall": "cd server && npm install && cd ../client && npm install",
+    "build": "cd client && npm run build && cd ../server && npm run build",
+    "start": "cd server && node server.js"
+  }
+}

@@ -1,7 +1,12 @@
 /* important: API client for communicating with the Express backend.
  * Provides a fetch wrapper that automatically attaches the JWT token
  * and throws typed ApiError on non-2xx responses. */
-const API_URL = 'http://localhost:3000';
+/* important: In production, API is served from the same origin (Express serves both).
+ * In development (Vite on :5173), we point to the Express dev server on :3000.
+ * nota bene: This avoids CORS issues in production. */
+const API_URL = window.location.hostname === 'localhost' && window.location.port === '5173'
+    ? 'http://localhost:3000'
+    : '';
 
 /* nota bene: Custom error class that carries the HTTP status code
  * so callers can differentiate 401/403/409/500 errors. */
