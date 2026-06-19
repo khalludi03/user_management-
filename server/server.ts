@@ -155,6 +155,9 @@ app.get('/api/users', authenticateJWT, async (req: any, res: any) => {
 
 /* note: Blocks selected users by setting their status to 'blocked'. */
 app.patch('/api/users/block', authenticateJWT, async (req: any, res: any) => {
+    if (req.user.status === 'unverified') {
+        return res.status(403).json({ error: 'Please verify your email before managing users.' });
+    }
     const { ids } = req.body;
     if (!ids || !Array.isArray(ids) || ids.length === 0) {
         return res.status(400).json({ error: 'User IDs are required' });
@@ -166,6 +169,9 @@ app.patch('/api/users/block', authenticateJWT, async (req: any, res: any) => {
 /* nota bene: Only affects users with status = 'blocked' to avoid accidentally
  * changing unverified or active users to active. */
 app.patch('/api/users/unblock', authenticateJWT, async (req: any, res: any) => {
+    if (req.user.status === 'unverified') {
+        return res.status(403).json({ error: 'Please verify your email before managing users.' });
+    }
     const { ids } = req.body;
     if (!ids || !Array.isArray(ids) || ids.length === 0) {
         return res.status(400).json({ error: 'User IDs are required' });
@@ -177,6 +183,9 @@ app.patch('/api/users/unblock', authenticateJWT, async (req: any, res: any) => {
 /* important: Deletes selected users permanently.
  * Deleted users can re-register with the same email since there is no residual record. */
 app.delete('/api/users', authenticateJWT, async (req: any, res: any) => {
+    if (req.user.status === 'unverified') {
+        return res.status(403).json({ error: 'Please verify your email before managing users.' });
+    }
     const { ids } = req.body;
     if (!ids || !Array.isArray(ids) || ids.length === 0) {
         return res.status(400).json({ error: 'User IDs are required' });
@@ -188,6 +197,9 @@ app.delete('/api/users', authenticateJWT, async (req: any, res: any) => {
 /* note: Deletes all users with status = 'unverified' in one operation.
  * Useful for cleaning up unverified registrations. */
 app.delete('/api/users/unverified', authenticateJWT, async (req: any, res: any) => {
+    if (req.user.status === 'unverified') {
+        return res.status(403).json({ error: 'Please verify your email before managing users.' });
+    }
     const result = await pool.query(`DELETE FROM users WHERE status = 'unverified'`);
     res.json({ message: `${result.rowCount} unverified users deleted` });
 });

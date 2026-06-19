@@ -9,6 +9,7 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import unlockIcon from '../assets/unlock.svg';
 
+
 interface User {
     id: string;
     name: string;
@@ -149,8 +150,14 @@ export default function UserManagement() {
             fetchUsers();
         } catch (err: any) {
             if (err instanceof ApiError && err.status === 403) {
-                logout();
-                navigate('/login');
+                /* nota bene: 403 from blocked user → redirect to login.
+                 * 403 from unverified user → just show the error. */
+                if (err.message.includes('verify your email')) {
+                    setError(err.message);
+                } else {
+                    logout();
+                    navigate('/login');
+                }
             } else {
                 setError(err.message || 'Action failed');
             }
