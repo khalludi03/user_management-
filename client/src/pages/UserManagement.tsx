@@ -7,6 +7,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { api, ApiError } from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import unlockIcon from '../assets/unlock.svg';
 
 interface User {
     id: string;
@@ -208,7 +209,7 @@ export default function UserManagement() {
                     Block
                 </button>
                 <button className="btn btn-success" disabled={selected.size === 0} onClick={() => handleAction('unblock')} title="Unblock selected users">
-                    🔓
+                    <img src={unlockIcon} alt="Unblock" width={16} height={16} />
                 </button>
                 <button className="btn btn-danger" disabled={selected.size === 0} onClick={() => handleAction('delete')} title="Delete selected users">
                     🗑️
