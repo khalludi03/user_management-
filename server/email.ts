@@ -25,7 +25,8 @@ export function generateVerificationToken(userId: string): string {
 /* important: Sends a verification email with a clickable link.
  * This runs asynchronously after registration — the user is immediately registered. */
 export async function sendVerificationEmail(email: string, name: string, token: string) {
-    const link = `http://localhost:${process.env.PORT || 3000}/verify?token=${token}`;
+    const BASE_URL = process.env.RENDER_EXTERNAL_URL || `http://localhost:${process.env.PORT || 3000}`;
+    const link = `${BASE_URL}/verify?token=${token}`;
     await transporter.sendMail({
         from: process.env.SMTP_USER,
         to: email,
